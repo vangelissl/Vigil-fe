@@ -67,7 +67,7 @@ const videoUploadRoute = createRoute({
 
 const videoDetailRoute = createRoute({
 	getParentRoute: () => appRoute,
-	path: "/videos/detail",
+	path: "/videos/$videoId",
 	component: VideoDetailPage,
 });
 

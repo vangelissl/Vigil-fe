@@ -1,7 +1,6 @@
 import { createRootRoute, createRoute, Router } from "@tanstack/react-router";
 import { App } from "./App";
 
-// Import all page components
 import { LoginPage } from "./routes/LoginPage";
 import { RegisterPage } from "./routes/RegisterPage";
 import { DashboardPage } from "./routes/DashboardPage";
@@ -12,17 +11,14 @@ import { ProfilePage } from "./routes/ProfilePage";
 import { AnalysisResultsPage } from "./routes/AnalysisResultsPage";
 import { NotFoundPage } from "./routes/NotFoundPage";
 
-// Import layout components
 import { AppLayout } from "./features/layout/components/AppLayout";
 import { ProtectedRoute } from "./shared/components/ProtectedRoute";
 
-// Root route
 const rootRoute = createRootRoute({
 	component: App,
 	notFoundComponent: NotFoundPage,
 });
 
-// Public routes (no auth needed)
 const loginRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: "/login",
@@ -35,7 +31,6 @@ const registerRoute = createRoute({
 	component: RegisterPage,
 });
 
-// Protected layout
 const appRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: "/",
@@ -46,10 +41,9 @@ const appRoute = createRoute({
 	),
 });
 
-// Protected routes (children of appRoute)
 const dashboardRoute = createRoute({
 	getParentRoute: () => appRoute,
-	path: "/dashboard",
+	path: "/",
 	component: DashboardPage,
 });
 
@@ -71,19 +65,18 @@ const videoDetailRoute = createRoute({
 	component: VideoDetailPage,
 });
 
-const analysisResultsRoute = createRoute({
-	getParentRoute: () => appRoute,
-	path: "/analysis/results",
-	component: AnalysisResultsPage,
-});
-
 const profileRoute = createRoute({
 	getParentRoute: () => appRoute,
 	path: "/profile",
 	component: ProfilePage,
 });
 
-// Combine all routes
+const analysisRoute = createRoute({
+	getParentRoute: () => appRoute,
+	path: "/analysis/$analysisId",
+	component: AnalysisResultsPage,
+});
+
 const routeTree = rootRoute.addChildren([
 	loginRoute,
 	registerRoute,
@@ -92,15 +85,13 @@ const routeTree = rootRoute.addChildren([
 		videoListRoute,
 		videoUploadRoute,
 		videoDetailRoute,
-		analysisResultsRoute,
 		profileRoute,
+		analysisRoute,
 	]),
 ]);
 
-// Create router
 export const router = new Router({ routeTree });
 
-// Type safety
 declare module "@tanstack/react-router" {
 	interface Register {
 		router: typeof router;

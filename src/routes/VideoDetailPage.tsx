@@ -1,4 +1,4 @@
-import { useParams } from '@tanstack/react-router';
+import { useParams, useNavigate } from '@tanstack/react-router';
 import { useVideoDetail } from '../features/videos/hooks/useVideoDetails';
 import { VideoPlayer } from '../features/videos/components/VideoPlayer';
 import { useTriggerAnalysis } from '../features/analysis/hooks/useAnalysis';
@@ -6,8 +6,18 @@ import { formatBytes, formatDate } from '../shared/utils/format';
 
 export function VideoDetailPage() {
   const { videoId } = useParams({ from: '/videos/$videoId' });
+  const navigate = useNavigate();
   const { data: video, isLoading } = useVideoDetail(videoId);
-  const { mutate: triggerAnalysis, isPending } = useTriggerAnalysis();
+  const { mutateAsync: triggerAnalysis, isPending } = useTriggerAnalysis();
+
+  const handleAnalyze = async () => {
+    try {
+      const result = await triggerAnalysis(videoId);
+      navigate({ to: `/analysis/$analysisId`, params: { analysisId: result.id } });
+    } catch (error) {
+      console.error('Analysis failed:', error);
+    }
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -41,7 +51,7 @@ export function VideoDetailPage() {
       </div>
 
       <button
-        onClick={() => triggerAnalysis(videoId)}
+        onClick={handleAnalyze}
         disabled={isPending}
         className="mt-6 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
       >

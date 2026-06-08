@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const apiClient = axios.create({
-	baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/",
+	baseURL: (import.meta.env.VITE_API_URL || "http://localhost:5000/").replace(/\/$/, "") + "/",
 	withCredentials: true,
 	timeout: 10000,
 });
@@ -13,6 +13,10 @@ apiClient.interceptors.request.use(
 		const token = localStorage.getItem("access_token");
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`;
+		}
+		// For FormData, let axios automatically set Content-Type with boundary
+		if (config.data instanceof FormData) {
+			config.headers["Content-Type"] = undefined;
 		}
 		return config;
 	},
@@ -30,18 +34,29 @@ apiClient.interceptors.response.use(
 			originalRequest._retry = true;
 
 			try {
+				const baseURL = apiClient.defaults.baseURL || "/";
+				const refreshUrl = baseURL.endsWith("/") 
+					? `${baseURL}auth/refresh` 
+					: `${baseURL}/auth/refresh`;
+
 				const response = await axios.post(
-					`${apiClient.defaults.baseURL}/auth/refresh`,
+					refreshUrl,
 					{},
-					{ withCredentials: true }
+					{ withCredentials: true },
 				);
 
 				const { access_token } = response.data;
 				localStorage.setItem("access_token", access_token);
 
 				originalRequest.headers.Authorization = `Bearer ${access_token}`;
+				// Remove Content-Type for FormData retry
+				if (originalRequest.data instanceof FormData) {
+					delete originalRequest.headers["Content-Type"];
+				}
+				return apiClient.request(originalRequest);
 			} catch (refreshError) {
-				// Use auth store when implemented
+				// Token refresh failed - clear auth state and redirect to login
+				localStorage.removeItem("access_token");
 				window.location.href = "/login";
 				return Promise.reject(refreshError);
 			}

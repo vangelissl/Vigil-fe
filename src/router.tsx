@@ -1,99 +1,129 @@
-import { createRootRoute, createRoute, Router } from "@tanstack/react-router";
-import { App } from "./App";
+import { createRootRoute, createRoute, Router } from '@tanstack/react-router';
+import { App } from './App';
 
-import { LoginPage } from "./routes/LoginPage";
-import { RegisterPage } from "./routes/RegisterPage";
-import { DashboardPage } from "./routes/DashboardPage";
-import { VideoListPage } from "./routes/VideoListPage";
-import { VideoUploadPage } from "./routes/VideoUploadPage";
-import { VideoDetailPage } from "./routes/VideoDetailPage";
-import { ProfilePage } from "./routes/ProfilePage";
-import { AnalysisResultsPage } from "./routes/AnalysisResultsPage";
-import { NotFoundPage } from "./routes/NotFoundPage";
+// Pages
+import { LoginPage } from './routes/LoginPage';
+import { RegisterPage } from './routes/RegisterPage';
+import { DashboardPage } from './routes/DashboardPage';
+import { VideoListPage } from './routes/VideoListPage';
+import { VideoUploadPage } from './routes/VideoUploadPage';
+import { VideoDetailPage } from './routes/VideoDetailPage';
+import { ProfilePage } from './routes/ProfilePage';
+import { AnalysisResultsPage } from './routes/AnalysisResultsPage';
+import { NotFoundPage } from './routes/NotFoundPage';
 
-import { AppLayout } from "./features/layout/components/AppLayout";
-import { ProtectedRoute } from "./shared/components/ProtectedRoute";
+// Components
+import { AppLayout } from './features/layout/components/AppLayout';
+import { ProtectedRoute } from './shared/components/ProtectedRoute';
 
+// Root
 const rootRoute = createRootRoute({
-	component: App,
-	notFoundComponent: NotFoundPage,
+  component: App,
+  notFoundComponent: NotFoundPage,
 });
 
+// Public routes
 const loginRoute = createRoute({
-	getParentRoute: () => rootRoute,
-	path: "/login",
-	component: LoginPage,
+  getParentRoute: () => rootRoute,
+  path: '/login',
+  component: LoginPage,
 });
 
 const registerRoute = createRoute({
-	getParentRoute: () => rootRoute,
-	path: "/register",
-	component: RegisterPage,
+  getParentRoute: () => rootRoute,
+  path: '/register',
+  component: RegisterPage,
 });
 
-const appRoute = createRoute({
-	getParentRoute: () => rootRoute,
-	path: "/",
-	component: () => (
-		<ProtectedRoute>
-			<AppLayout />
-		</ProtectedRoute>
-	),
-});
-
+// Protected routes with layout
 const dashboardRoute = createRoute({
-	getParentRoute: () => appRoute,
-	path: "/dashboard",
-	component: DashboardPage,
+  getParentRoute: () => rootRoute,
+  path: '/',
+  component: () => (
+    <ProtectedRoute>
+      <AppLayout>
+        <DashboardPage />
+      </AppLayout>
+    </ProtectedRoute>
+  ),
 });
 
 const videoListRoute = createRoute({
-	getParentRoute: () => appRoute,
-	path: "/videos",
-	component: VideoListPage,
+  getParentRoute: () => rootRoute,
+  path: '/videos',
+  component: () => (
+    <ProtectedRoute>
+      <AppLayout>
+        <VideoListPage />
+      </AppLayout>
+    </ProtectedRoute>
+  ),
 });
 
 const videoUploadRoute = createRoute({
-	getParentRoute: () => appRoute,
-	path: "/videos/upload",
-	component: VideoUploadPage,
+  getParentRoute: () => rootRoute,
+  path: '/videos/upload',
+  component: () => (
+    <ProtectedRoute>
+      <AppLayout>
+        <VideoUploadPage />
+      </AppLayout>
+    </ProtectedRoute>
+  ),
 });
 
 const videoDetailRoute = createRoute({
-	getParentRoute: () => appRoute,
-	path: "/videos/$videoId",
-	component: VideoDetailPage,
+  getParentRoute: () => rootRoute,
+  path: '/videos/$videoId',
+  component: () => (
+    <ProtectedRoute>
+      <AppLayout>
+        <VideoDetailPage />
+      </AppLayout>
+    </ProtectedRoute>
+  ),
 });
 
 const profileRoute = createRoute({
-	getParentRoute: () => appRoute,
-	path: "/profile",
-	component: ProfilePage,
+  getParentRoute: () => rootRoute,
+  path: '/profile',
+  component: () => (
+    <ProtectedRoute>
+      <AppLayout>
+        <ProfilePage />
+      </AppLayout>
+    </ProtectedRoute>
+  ),
 });
 
 const analysisRoute = createRoute({
-	getParentRoute: () => appRoute,
-	path: "/analysis/$analysisId",
-	component: AnalysisResultsPage,
+  getParentRoute: () => rootRoute,
+  path: '/analysis/$analysisId',
+  component: () => (
+    <ProtectedRoute>
+      <AppLayout>
+        <AnalysisResultsPage />
+      </AppLayout>
+    </ProtectedRoute>
+  ),
 });
 
+// Route tree
 const routeTree = rootRoute.addChildren([
-	loginRoute,
-	registerRoute,
-	appRoute.addChildren([
-		dashboardRoute,
-		videoListRoute,
-		videoUploadRoute,
-		videoDetailRoute,
-		profileRoute,
-		analysisRoute,
-	]),
+  loginRoute,
+  registerRoute,
+  dashboardRoute,
+  videoListRoute,
+  videoUploadRoute,
+  videoDetailRoute,
+  profileRoute,
+  analysisRoute,
 ]);
 
 export const router = new Router({ routeTree });
 
-declare module "@tanstack/react-router" {
-	interface Register {
-		router: typeof router;
-	}
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
 }

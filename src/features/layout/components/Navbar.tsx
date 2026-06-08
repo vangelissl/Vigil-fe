@@ -19,7 +19,7 @@ export function Navbar() {
 				</Link>
 
 				<div className="hidden md:flex gap-6">
-					<Link to="/dashboard" className="text-gray-700 hover:text-blue-600">
+					<Link to="/" className="text-gray-700 hover:text-blue-600">
 						Dashboard
 					</Link>
 					<Link to="/videos" className="text-gray-700 hover:text-blue-600">

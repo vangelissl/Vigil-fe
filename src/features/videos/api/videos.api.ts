@@ -41,6 +41,6 @@ export const videosAPI = {
 	},
 
 	delete: async (videoId: string) => {
-		await apiClient.delete(`/videos/${videoId}`);
+		await apiClient.delete(`/videos/${videoId}/delete`);
 	},
 };
